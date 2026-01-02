@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { urlConfig } from '../../config';
+import { useAppContext } from '../../context/AuthContext';
 import './RegisterPage.css';
 
 function RegisterPage() {
@@ -6,13 +9,56 @@ function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    // Task 4: Include a state for error message
+    const [showerr, setShowerr] = useState('');
 
-    const handleRegister = () => {
-        console.log('Register clicked');
-        console.log('First Name:', firstName);
-        console.log('Last Name:', lastName);
-        console.log('Email:', email);
-        console.log('Password:', password);
+    // Task 5: Create a local variable for navigate and setIsLoggedIn
+    const navigate = useNavigate();
+    const { setIsLoggedIn, setUserName } = useAppContext();
+
+    const handleRegister = async () => {
+        try {
+            // Step 1: Implement API call
+            const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+                // Task 6: Set method
+                method: 'POST',
+                // Task 7: Set headers
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // Task 8: Set body to send user details
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password,
+                }),
+            });
+
+            // Step 2: Access data and set user details
+            // Task 1: Access data coming from fetch API
+            const json = await response.json();
+
+            if (json.authtoken) {
+                // Task 2: Set user details in session storage
+                sessionStorage.setItem('auth-token', json.authtoken);
+                sessionStorage.setItem('name', firstName);
+                sessionStorage.setItem('email', json.email);
+
+                // Task 3: Set the state of user to logged in using the useAppContext
+                setIsLoggedIn(true);
+                setUserName(firstName);
+
+                // Task 4: Navigate to the MainPage after logging in
+                navigate('/app');
+            } else {
+                // Task 5: Set an error message if the registration fails
+                setShowerr(json.error || 'Registration failed. Please try again.');
+            }
+        } catch (e) {
+            console.log("Error fetching details: " + e.message);
+            setShowerr('An error occurred. Please try again.');
+        }
     };
 
     return (
@@ -56,6 +102,8 @@ function RegisterPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
+                            {/* Task 6: Display error message to end user */}
+                            {showerr && <div className="text-danger mt-1">{showerr}</div>}
                         </div>
 
                         <div className="mb-4">
