@@ -10,17 +10,12 @@ export default function Navbar() {
     useEffect(() => {
         const authTokenFromSession = sessionStorage.getItem('auth-token');
         const nameFromSession = sessionStorage.getItem('name');
-        if (authTokenFromSession) {
-            if(isLoggedIn && nameFromSession) {
-                setUserName(nameFromSession);
-            } else {
-                sessionStorage.removeItem('auth-token');
-                sessionStorage.removeItem('name');
-                sessionStorage.removeItem('email');
-                setIsLoggedIn(false);
-            }
+        // If token exists in session, restore logged in state
+        if (authTokenFromSession && nameFromSession) {
+            setIsLoggedIn(true);
+            setUserName(nameFromSession);
         }
-    }, [isLoggedIn, setIsLoggedIn, setUserName])
+    }, [setIsLoggedIn, setUserName])
 
     const handleLogout = () => {
         sessionStorage.removeItem('auth-token');
