@@ -8,19 +8,28 @@ function MainPage() {
 
     useEffect(() => {
         // Task 1: Write async fetch operation
-        // Write your code below this line
+        const fetchGifts = async () => {
+            try {
+                const response = await fetch(`${urlConfig.backendUrl}/api/gifts`);
+                const data = await response.json();
+                setGifts(data);
+            } catch (error) {
+                console.error('Error fetching gifts:', error);
+            }
+        };
+        fetchGifts();
     }, []);
 
     // Task 2: Navigate to details page
     const goToDetailsPage = (productId) => {
-        // Write your code below this line
-
-      };
+        navigate(`/app/product/${productId}`);
+    };
 
     // Task 3: Format timestamp
     const formatDate = (timestamp) => {
-        // Write your code below this line
-      };
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
 
     const getConditionClass = (condition) => {
         return condition === "New" ? "list-group-item-success" : "list-group-item-warning";
@@ -33,21 +42,20 @@ function MainPage() {
                     <div key={gift.id} className="col-md-4 mb-4">
                         <div className="card product-card">
 
-                            {/* // Task 4: Display gift image or placeholder */}
-                            {/* // Write your code below this line */}
+                            {/* Task 4: Display gift image or placeholder */}
+                            <img src={gift.image ? gift.image : '/images/placeholder.jpg'} className="card-img-top" alt={gift.name} />
 
                             <div className="card-body">
 
-                                {/* // Task 5: Display gift image or placeholder */}
-                                {/* // Write your code below this line */}
+                                {/* Task 5: Display gift name */}
+                                <h5 className="card-title">{gift.name}</h5>
 
                                 <p className={`card-text ${getConditionClass(gift.condition)}`}>
                                 {gift.condition}
                                 </p>
 
-                                {/* // Task 6: Display gift image or placeholder */}
-                                {/* // Write your code below this line */}
-                                
+                                {/* Task 6: Display formatted date */}
+                                <p className="card-text">Added: {formatDate(gift.date_added)}</p>
 
                                 <button onClick={() => goToDetailsPage(gift.id)} className="btn btn-primary">
                                     View Details
